@@ -1,0 +1,11 @@
+package com.estiloycorte.service;
+import com.estiloycorte.model.*; import com.estiloycorte.repository.*; import org.junit.jupiter.api.*; import java.math.BigDecimal; import java.time.*; import static org.junit.jupiter.api.Assertions.*;
+class CitaServiceTest {
+ private InMemoryClienteRepository clientes; private InMemoryCitaRepository citas; private ClienteService clienteService; private CitaService service; private Cliente cliente; private Servicio servicio; private Empleado empleado; private final LocalDate fecha=LocalDate.of(2026,10,10);
+ @BeforeEach void setup(){clientes=new InMemoryClienteRepository();citas=new InMemoryCitaRepository();clienteService=new ClienteService(clientes);DisponibilidadService disponibilidad=new DisponibilidadService(citas);service=new CitaService(clienteService,disponibilidad,citas);cliente=new Cliente("Ana","3001112222","ana@example.com");clienteService.registrarCliente(cliente);servicio=new Servicio("Corte",30,new BigDecimal("25000"),true);empleado=new Empleado("E1","Luis",true);}
+ private Cita cita(String id,LocalTime i,LocalTime f){return new Cita(id,cliente,servicio,empleado,fecha,i,f,false);}
+ @Test void programaCitaDisponible(){Cita c=cita("C1",LocalTime.of(10,0),LocalTime.of(10,30));assertSame(c,service.programarCita(c));assertEquals(1,citas.buscarPorEmpleadoYFecha("E1",fecha).size());}
+ @Test void rechazaClienteNoRegistrado(){Cliente otro=new Cliente("Pedro","3009998888","pedro@example.com");Cita c=new Cita("C2",otro,servicio,empleado,fecha,LocalTime.of(10,0),LocalTime.of(10,30),false);assertThrows(IllegalArgumentException.class,()->service.programarCita(c));}
+ @Test void rechazaHorarioOcupado(){service.programarCita(cita("C1",LocalTime.of(10,0),LocalTime.of(10,30)));assertThrows(IllegalArgumentException.class,()->service.programarCita(cita("C2",LocalTime.of(10,15),LocalTime.of(10,45))));assertEquals(1,citas.buscarPorEmpleadoYFecha("E1",fecha).size());}
+ @Test void rechazaServicioInactivo(){Servicio inactivo=new Servicio("Tinte",60,new BigDecimal("50000"),false);Cita c=new Cita("C3",cliente,inactivo,empleado,fecha,LocalTime.of(11,0),LocalTime.of(12,0),false);assertThrows(IllegalArgumentException.class,()->service.programarCita(c));}
+}
