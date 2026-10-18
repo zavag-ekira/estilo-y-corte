@@ -1,14 +1,9 @@
 # Estilo & Corte — incremento inicial Java
-Este es un incremento académico propuesto para HU-001, HU-005 y HU-006. **Ejecuta los comandos antes de afirmar que las pruebas pasaron.**
+Este es un incremento académico propuesto para HU-001, HU-005 y HU-006. 
 
 ## Requisitos
 JDK 17+, Maven 3.9+ e internet para descargar dependencias la primera vez.
 
-## Ejecutar
-- `mvn clean test` — ejecutar pruebas unitarias.
-- `mvn clean verify` — ejecutar pruebas y generar JaCoCo.
-- Informe: `target/site/jacoco/index.html`
-- `mvn checkstyle:check` — análisis básico de estilo.
 
 ## Estructura
 - `model`: entidades del negocio.
